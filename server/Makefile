@@ -2,7 +2,7 @@ JAVAC=javac
 JFLAGS=
 
 .SUFFIXES: .java .class
-.PHONY: clean
+.PHONY: clean run
 
 #CLASSPATH = src/
 
@@ -34,11 +34,11 @@ run: server.jar
 	java -jar server.jar
 
 
-server.jar: $(SERVER_CLASSES) $(BUILDDIR)
+server.jar: $(BUILDDIR) $(SERVER_CLASSES)
 	jar -cvfe $@ pt.tecnico.cnv.server.WebServer -C $(BUILDDIR) .
 
 
-%.class: %.java
+%.class: $(BUILDDIR) %.java
 	$(JAVAC) $(JFLAGS) -d $(BUILDDIR) -cp "$(CLASSPATH)" -sourcepath "$(SOURCEPATH)" $(SOURCEPATH)/$*.java
 
 clean:
