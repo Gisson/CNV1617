@@ -5,4 +5,6 @@ jdk:
 git:
   depth: 3
 
-script: cd $TRAVIS_BUILD_DIR && cd server && make clean all
+script: 
+  - make -v
+  - cd $TRAVIS_BUILD_DIR && cd server && make clean all
