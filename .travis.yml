@@ -7,4 +7,5 @@ git:
 
 script: 
   - make -v
+  - tree
   - cd $TRAVIS_BUILD_DIR && cd server && make clean all
