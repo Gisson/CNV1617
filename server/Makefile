@@ -19,7 +19,11 @@ SERVER_SOURCES=$(wildcard $(SOURCEPATH)/pt/tecnico/cnv/server/*.java)
 SERVER_CLASSES=$(SERVER_SOURCES:$(SOURCEPATH)/%.java=%.class)
 
 
-all: $(BUILDDIR) server.jar
+# FIXME: using ant because travisCI does not like the Makefile despite it working both on my machine and on AWS
+
+all:
+	ant compile jar
+#all: $(BUILDDIR) server.jar
 
 files:
 	@echo sources: $(SERVER_SOURCES)
@@ -30,8 +34,10 @@ $(BUILDDIR):
 	@echo sources: $(SERVER_SOURCES)
 	@echo classes: $(SERVER_CLASSES)
 
-run: server.jar
-	java -jar server.jar
+#run: server.jar
+#	java -jar server.jar
+run:
+	ant run
 
 
 server.jar: $(BUILDDIR) $(SERVER_CLASSES)
@@ -44,3 +50,4 @@ server.jar: $(BUILDDIR) $(SERVER_CLASSES)
 clean:
 	$(RM) -r $(BUILDDIR)
 	$(RM) server.jar
+	ant clean
