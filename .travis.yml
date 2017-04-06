@@ -1,4 +1,5 @@
-install: tree
+before_install:
+  - sudo apt-get install make tree -y
 
 language: java
 jdk:
