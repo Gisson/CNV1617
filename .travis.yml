@@ -1,4 +1,5 @@
 before_install:
+  - sudo apt-get -qq update
   - sudo apt-get install make tree -y
 
 language: java
@@ -8,7 +9,10 @@ jdk:
 git:
   depth: 3
 
-script: 
+before_script:
   - make -v
   - tree
-  - cd $TRAVIS_BUILD_DIR && cd server && make clean all
+  - cat /etc/os-release
+
+script:
+  - cd server && make clean all
