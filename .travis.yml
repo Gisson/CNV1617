@@ -1,3 +1,5 @@
+install: tree
+
 language: java
 jdk:
   - oraclejdk8
