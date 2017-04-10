@@ -3,6 +3,8 @@ package pt.tecnico.cnv.server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URI;
@@ -40,16 +42,26 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             URI uri = t.getRequestURI();
-            String response = "This was the query:" + uri.getQuery()
-                               + "##\n";
-            Map<String, String> query_pairs = splitQuery(uri.getQuery());
-            response+=query_pairs;
-            for (Map.Entry<String, String> entry : query_pairs.entrySet()) {
-                response+="key="+entry.getKey()+"\n";
-                response+="value="+entry.getValue()+"\n";
-            }
+            String response = uri.getQuery();
 
-            t.sendResponseHeaders(200, response.length());
+            try{
+                Map<String, String> query_pairs = splitQuery(uri.getQuery());
+                String inFile = query_pairs.get("f"); 
+                int scols = Integer.parseInt(query_pairs.get("sc"));
+                int srows = Integer.parseInt(query_pairs.get("sr"));
+                int wcols = Integer.parseInt(query_pairs.get("wc"));
+                int wrows = Integer.parseInt(query_pairs.get("wr"));
+                int coff = Integer.parseInt(query_pairs.get("coff"));
+                int roff = -Integer.parseInt(query_pairs.get("roff"));
+                t.sendResponseHeaders(200, response.length());
+            } catch (Exception e) {
+                response = "bad arguments?" + "\n\n\n\n";
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                response += sw.toString() + "\n";
+                t.sendResponseHeaders(400, response.length());
+            }
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
              
