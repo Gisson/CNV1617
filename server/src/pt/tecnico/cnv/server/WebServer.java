@@ -13,6 +13,7 @@ import java.net.URLDecoder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.Headers;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -28,6 +29,7 @@ import java.io.FileInputStream;
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
     int test1 = Test.test; // just testing dependencies in the Makefile
+    public static final String RAYTRACER_PATH = "../raytracer";
 
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
@@ -58,17 +60,22 @@ public class WebServer {
                 int roff = -Integer.parseInt(query_pairs.get("roff"));
                 File temp = File.createTempFile("render", ".bmp");
                 RayTracer rt = new RayTracer(scols, srows, wcols, wrows, coff, roff);
-                rt.readScene(new File("../raytracer/"+inFile));
+                rt.readScene(new File(RAYTRACER_PATH + "/" + inFile));
                 rt.draw(temp);
 
 
+                Headers headers = t.getResponseHeaders();
+                headers.add("Content-Type", "image/bmp");
+                String bmpFilename = inFile + "_" + scols + "_" + srows + "_" + wcols + "_" + wrows + "_" + coff + "_" + roff + ".bmp";
+                headers.add("Content-Disposition", "inline; filename=\"" + bmpFilename +"\"");
                 t.sendResponseHeaders(200, temp.length());
+
                 InputStream is=new FileInputStream(temp);
                 OutputStream os = t.getResponseBody();
                 int c;
                 byte[] buf = new byte[8192];
                 while ((c = is.read(buf, 0, buf.length)) > 0) {
-                   os.write(buf, 0, c);
+                    os.write(buf, 0, c);
                     os.flush();
                 }
                 os.close();
@@ -83,8 +90,6 @@ public class WebServer {
                 os.write(response.getBytes());
                 os.close();
             }
-             
-            
         }
     }
 
