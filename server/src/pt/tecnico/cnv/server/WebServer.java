@@ -21,6 +21,9 @@ import java.util.LinkedHashMap;
 
 import pt.tecnico.cnv.server.Test;
 import raytracer.RayTracer;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
 
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
@@ -30,6 +33,7 @@ public class WebServer {
         LOGGER.setLevel(Level.INFO);
         LOGGER.log(Level.INFO,"Raytracer class: " + RayTracer.class.getName());
         LOGGER.log(Level.INFO,"Starting webserver...");
+        LOGGER.log(Level.INFO,"WD: " + System.getProperty("user.dir"));
 
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
@@ -42,7 +46,6 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             URI uri = t.getRequestURI();
-            String response = uri.getQuery();
 
             try{
                 Map<String, String> query_pairs = splitQuery(uri.getQuery());
@@ -53,19 +56,35 @@ public class WebServer {
                 int wrows = Integer.parseInt(query_pairs.get("wr"));
                 int coff = Integer.parseInt(query_pairs.get("coff"));
                 int roff = -Integer.parseInt(query_pairs.get("roff"));
-                t.sendResponseHeaders(200, response.length());
+                File temp = File.createTempFile("render", ".bmp");
+                RayTracer rt = new RayTracer(scols, srows, wcols, wrows, coff, roff);
+                rt.readScene(new File("../raytracer/"+inFile));
+                rt.draw(temp);
+
+
+                t.sendResponseHeaders(200, temp.length());
+                InputStream is=new FileInputStream(temp);
+                OutputStream os = t.getResponseBody();
+                int c;
+                byte[] buf = new byte[8192];
+                while ((c = is.read(buf, 0, buf.length)) > 0) {
+                   os.write(buf, 0, c);
+                    os.flush();
+                }
+                os.close();
             } catch (Exception e) {
-                response = "bad arguments?" + "\n\n\n\n";
+                String response = "bad arguments?" + "\n\n\n\n";
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
                 response += sw.toString() + "\n";
                 t.sendResponseHeaders(400, response.length());
+                OutputStream os = t.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
             }
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
              
-            os.close();
+            
         }
     }
 
