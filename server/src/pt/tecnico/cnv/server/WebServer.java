@@ -29,7 +29,7 @@ import java.io.FileInputStream;
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
     int test1 = Test.test; // just testing dependencies in the Makefile
-    public static final String RAYTRACER_PATH = "../raytracer";
+    public static final String RAYTRACER_PATH = System.getProperty("user.dir")+"/../raytracer";
 
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
