@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 
 import pt.tecnico.cnv.server.Test;
+import raytracer.RayTracer;
 
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
@@ -25,12 +26,13 @@ public class WebServer {
 
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
+        LOGGER.log(Level.INFO,"Raytracer class: " + RayTracer.class.getName());
         LOGGER.log(Level.INFO,"Starting webserver...");
 
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/r.html", new MyHandler());
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(new WebServerExecutor()); // creates a default executor
         server.start();
     }
 
