@@ -21,8 +21,8 @@ public class WebServer {
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
         LOGGER.log(Level.INFO,"Starting webserver...");
-	    
-	    HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/test", new MyHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -41,3 +41,4 @@ public class WebServer {
     }
 
 }
+// vim: expandtab:ts=4:sw=4
