@@ -11,8 +11,8 @@ import com.sun.net.httpserver.HttpServer;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-
 import pt.tecnico.cnv.server.Test;
+import raytracer.RayTracer;
 
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
@@ -20,6 +20,7 @@ public class WebServer {
 
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
+        LOGGER.log(Level.INFO,"Raytracer class: " + RayTracer.class.getName());
         LOGGER.log(Level.INFO,"Starting webserver...");
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);

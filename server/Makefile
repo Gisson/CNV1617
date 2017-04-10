@@ -4,7 +4,7 @@ JFLAGS=
 .SUFFIXES: .java .class
 .PHONY: clean run
 
-#CLASSPATH = src/
+CLASSPATH = src/:../raytracer/src
 
 # this is where javac searches for java files
 SOURCEPATH = src
@@ -21,9 +21,12 @@ SERVER_CLASSES=$(SERVER_SOURCES:$(SOURCEPATH)/%.java=%.class)
 
 # FIXME: using ant because travisCI does not like the Makefile despite it working both on my machine and on AWS
 
-all:
-	ant compile jar
+all: raytracer
+	ant compile
 #all: $(BUILDDIR) server.jar
+
+raytracer:
+	(cd ../raytracer/ && $(MAKE) all)
 
 files:
 	@echo sources: $(SERVER_SOURCES)
@@ -35,13 +38,13 @@ $(BUILDDIR):
 	@echo classes: $(SERVER_CLASSES)
 
 #run: server.jar
-#	java -jar server.jar
-run:
+#	java -cp "$(CLASSPATH)" -jar server.jar
+run: raytracer
 	ant run
 
 
-server.jar: $(BUILDDIR) $(SERVER_CLASSES)
-	jar -cvfe $@ pt.tecnico.cnv.server.WebServer -C $(BUILDDIR) .
+#server.jar: raytracer $(BUILDDIR) $(SERVER_CLASSES)
+#	jar -cvfe $@ pt.tecnico.cnv.server.WebServer -C $(BUILDDIR) .
 
 
 %.class: $(BUILDDIR) %.java
@@ -51,3 +54,4 @@ clean:
 	$(RM) -r $(BUILDDIR)
 	$(RM) server.jar
 	ant clean
+	(cd ../raytracer/ && $(MAKE) clean)

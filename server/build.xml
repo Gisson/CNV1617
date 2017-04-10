@@ -6,8 +6,11 @@
     <property name="jar.dir"     value="${build.dir}/jar"/>
 
     <property name="main-class"  value="pt.tecnico.cnv.server.WebServer"/>
-
-
+    <path id="project.class.path">
+        <pathelement path="${java.class.path}/"/>
+        <pathelement path="${build.dir}/classes"/>
+        <pathelement path="../raytracer/src/"/>
+    </path>
 
     <target name="clean">
         <delete dir="${build.dir}"/>
@@ -15,9 +18,12 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}"/>
+        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}">
+            <classpath refid="project.class.path"/>
+        </javac>
     </target>
 
+    <!-- warning: the jar does not have the correct classpath and will not work with raytracer -->
     <target name="jar" depends="compile">
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
@@ -27,8 +33,11 @@
         </jar>
     </target>
 
-    <target name="run" depends="jar">
-        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
+    <target name="run" depends="compile">
+        <!--java jar="${jar.dir}/${ant.project.name}.jar" fork="true"-->
+        <java classname="${main-class}" fork="true">
+            <classpath refid="project.class.path"/>
+        </java>
     </target>
 
     <target name="clean-build" depends="clean,jar"/>
@@ -36,3 +45,5 @@
     <target name="main" depends="clean,run"/>
 
 </project> 
+<!-- vim: expandtab:ts=4:sw=4
+-->
