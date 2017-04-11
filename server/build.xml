@@ -10,6 +10,7 @@
         <pathelement path="${java.class.path}/"/>
         <pathelement path="${build.dir}/classes"/>
         <pathelement path="../instrumentation/instrumented"/>
+        <pathelement path="../instrumentation/"/>
     </path>
 
     <target name="clean">

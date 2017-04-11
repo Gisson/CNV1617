@@ -11,12 +11,15 @@ public class Instrument {
         // create class info object
         ClassInfo ci = new ClassInfo(input_class);
         int count = ci.getRoutineCount();
-
+        ci.addAfter("Instrument", "printHello", ci.getClassName());
         // unmodified class, for now
         ci.write(output_class);
         System.out.println(input_class + " has " + count + " routines.");
     }
 
+    public static synchronized void printHello(String foo) {
+        System.out.println("hello: " + foo);
+    }
 
     static void instrument_dir(String path, String dir_name, String output_dir) {
         final String separator = System.getProperty("file.separator");
@@ -37,7 +40,7 @@ public class Instrument {
                 } else if (!filename.endsWith(".java")) {
                     // assume it's a folder
                     instrument_dir(path + separator + dir_name, filename,
-                                   output_dir);
+                                   output_dir + separator + dir_name);
                 }
             }
         } else {
