@@ -11,7 +11,7 @@ public class Instrument {
         // create class info object
         ClassInfo ci = new ClassInfo(input_class);
         int count = ci.getRoutineCount();
-        ci.addAfter("Instrument", "printHello", ci.getClassName());
+        ci.addBefore("Instrument", "printHello", ci.getClassName());
         // unmodified class, for now
         ci.write(output_class);
         System.out.println(input_class + " has " + count + " routines.");
