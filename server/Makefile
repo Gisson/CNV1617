@@ -21,12 +21,15 @@ SERVER_CLASSES=$(SERVER_SOURCES:$(SOURCEPATH)/%.java=%.class)
 
 # FIXME: using ant because travisCI does not like the Makefile despite it working both on my machine and on AWS
 
-all: raytracer
+all: instrumented-rt
 	ant compile
 #all: $(BUILDDIR) server.jar
 
 raytracer:
-	(cd ../raytracer/ && $(MAKE) all && java ICount ../raytracer/src/raytracer/ ../raytracer/src/raytracer/instrumented/raytracer)
+	(cd ../raytracer/ && $(MAKE) all)
+
+instrumented-rt:
+	(cd ../instrumentation/ && $(MAKE) all)
 
 files:
 	@echo sources: $(SERVER_SOURCES)
@@ -39,7 +42,7 @@ $(BUILDDIR):
 
 #run: server.jar
 #	java -cp "$(CLASSPATH)" -jar server.jar
-run: raytracer
+run: instrumented-rt
 	ant run
 
 
@@ -55,3 +58,4 @@ clean:
 	$(RM) server.jar
 	ant clean
 	(cd ../raytracer/ && $(MAKE) clean)
+	(cd ../instrumentation/ && $(MAKE) clean)

@@ -7,10 +7,9 @@
 
     <property name="main-class"  value="pt.tecnico.cnv.server.WebServer"/>
     <path id="project.class.path">
-		<pathelement path="../raytracer/src/raytracer/instrumented"/>
         <pathelement path="${java.class.path}/"/>
         <pathelement path="${build.dir}/classes"/>
-        <pathelement path="../raytracer/src/"/>
+        <pathelement path="../instrumentation/instrumented"/>
     </path>
 
     <target name="clean">
