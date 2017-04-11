@@ -5,7 +5,7 @@ BITURL="http://grupos.tecnico.ulisboa.pt/~meic-cnv.daemon/labs/labs-bit/BIT.zip"
 BITDIR="$HOME/BIT"
 
 #This is specific for the aws machine
-#export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk"
+export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk"
 
 cd $BASEDIR
 
