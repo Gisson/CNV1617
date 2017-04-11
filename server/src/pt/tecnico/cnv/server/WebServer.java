@@ -40,10 +40,11 @@ public class WebServer {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/r.html", new MyHandler());
+        server.createContext("/kill-yourself", new ExitHandler());
         server.setExecutor(new WebServerExecutor()); // creates a default executor
         server.start();
+        System.out.println("main exiting...");
     }
-
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
@@ -85,10 +86,7 @@ public class WebServer {
                 PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
                 response += sw.toString() + "\n";
-                t.sendResponseHeaders(400, response.length());
-                OutputStream os = t.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
+                doTextResponse(t, response, 400);
             }
         }
     }
@@ -102,6 +100,22 @@ public class WebServer {
         }
         return query_pairs;
     }
+
+    static class ExitHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            doTextResponse(t, "goodbyte world", 200);
+            System.exit(0);
+        }
+    }
+
+    private static void doTextResponse(HttpExchange t, String response, int code) throws IOException {
+        t.sendResponseHeaders(code, response.length());
+        OutputStream os = t.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+    }
+
 
 }
 // vim: expandtab:ts=4:sw=4
