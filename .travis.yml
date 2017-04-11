@@ -1,0 +1,20 @@
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install make tree -y
+
+language: java
+jdk:
+  - oraclejdk7
+
+git:
+  depth: 3
+
+before_script:
+  - make -v
+  - tree
+  - cat /etc/os-release
+
+script:
+  - cd $TRAVIS_BUILD_DIR && bash init.sh # downloads BIT
+  - cd $TRAVIS_BUILD_DIR && cd raytracer && make clean all
+  - cd $TRAVIS_BUILD_DIR && cd server && make clean all
