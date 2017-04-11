@@ -10,7 +10,7 @@ BITDIR="$HOME/BIT"
 cd $BASEDIR
 
 
-
+# also needed for travisCI
 if ! [[ -d  "$HOME/BIT" ]];then
   pushd .
   cd "$HOME"
@@ -20,8 +20,9 @@ if ! [[ -d  "$HOME/BIT" ]];then
   popd
 fi
 
-cd "server/"
 
-#create instrumentation dirs for raytracer
-mkdir -p  "$BASEDIR/raytracer/src/raytracer/instrumented/raytracer"
-make run
+if test $1 -eq "render-node"; then
+  cd "server/"
+  make run
+fi
+# vim: expandtab:ts=2:sw=2
