@@ -4,7 +4,7 @@ JFLAGS=
 .SUFFIXES: .java .class
 .PHONY: clean run
 
-CLASSPATH = src/:../raytracer/src
+CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:src/:../raytracer/src
 
 # this is where javac searches for java files
 SOURCEPATH = src
@@ -26,7 +26,7 @@ all: raytracer
 #all: $(BUILDDIR) server.jar
 
 raytracer:
-	(cd ../raytracer/ && $(MAKE) all)
+	(cd ../raytracer/ && $(MAKE) all && java ICount ../raytracer/src/raytracer/ ../raytracer/src/raytracer/instrumented/raytracer)
 
 files:
 	@echo sources: $(SERVER_SOURCES)
