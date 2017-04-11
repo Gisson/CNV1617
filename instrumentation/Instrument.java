@@ -19,6 +19,19 @@ public class Instrument {
                 System.out.println("Found draw method in " + input_class);
                 routine.addAfter("Instrument", "printStats", "null");
             }
+
+            // iterate instructions
+            InstructionArray instructions = routine.getInstructionArray();
+            for (Enumeration instrs = instructions.elements(); instrs.hasMoreElements(); ) {
+                Instruction instr = (Instruction) instrs.nextElement();
+                int opcode=instr.getOpcode();
+                if ((opcode==InstructionTable.NEW) ||
+                        (opcode==InstructionTable.newarray) ||
+                        (opcode==InstructionTable.anewarray) ||
+                        (opcode==InstructionTable.multianewarray)) {
+                        instr.addBefore("Instrument", "allocCount", new Integer(opcode));
+                }
+            }
         }
 
         // unmodified class, for now
@@ -35,8 +48,14 @@ public class Instrument {
         dyn_method_count++;
     }
 
+    private static int alloc_count = 0;
+    public static synchronized void allocCount(int type) {
+        alloc_count++;
+    }
+
     public static synchronized void printStats(String s) {
         System.out.println("dyn_method_count = " + dyn_method_count);
+        System.out.println("alloc_count = " + alloc_count);
     }
 
     static void instrument_dir(String path, String dir_name, String output_dir) {
