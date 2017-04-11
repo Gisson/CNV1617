@@ -21,7 +21,7 @@ if ! [[ -d  "$HOME/BIT" ]];then
 fi
 
 
-if test $1 -eq "render-node"; then
+if test $1 = "render-node"; then
   cd "server/"
   make run
 fi
