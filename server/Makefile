@@ -43,8 +43,8 @@ $(BUILDDIR):
 #run: server.jar
 #	java -cp "$(CLASSPATH)" -jar server.jar
 run: instrumented-rt
-	ant run
-
+	_JAVA_OPTIONS="-XX:-UseSplitVerifier" ant run
+# instrumented classes need _JAVA_OPTIONS="-XX:-UseSplitVerifier" to run
 
 #server.jar: raytracer $(BUILDDIR) $(SERVER_CLASSES)
 #	jar -cvfe $@ pt.tecnico.cnv.server.WebServer -C $(BUILDDIR) .
