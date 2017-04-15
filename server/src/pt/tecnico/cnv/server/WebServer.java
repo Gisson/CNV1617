@@ -41,6 +41,7 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/r.html", new MyHandler());
         server.createContext("/kill-yourself", new ExitHandler());
+        server.createContext("/version", new VersionHandler());
         server.setExecutor(new WebServerExecutor()); // creates a default executor
         server.start();
         System.out.println("main exiting...");
@@ -107,6 +108,31 @@ public class WebServer {
             doTextResponse(t, "goodbyte world", 200);
             System.exit(0);
         }
+    }
+
+    static class VersionHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = getProperty("java.version") + "\n"
+                            + getProperty("java.vendor") + "\n"
+                            + getProperty("java.home") + "\n"
+                            + getProperty("os.name") + "\n"
+                            + getProperty("user.dir") + "\n"
+                            + getEnv("JAVA_HOME") + "\n"
+                            + getEnv("JAVA_ROOT") + "\n"
+                            + getProperty("java.class.path") + "\n";
+            doTextResponse(t, response, 200);
+        }
+    }
+
+    private static String getEnv(String env) {
+        String result = System.getenv(env);
+        return env + ": " + (result != null ? result : "(null)");
+    }
+
+    private static String getProperty(String p) {
+        String result = System.getProperty(p);
+        return p + ": " + (result != null ? result : "(null)");
     }
 
     private static void doTextResponse(HttpExchange t, String response, int code) throws IOException {
