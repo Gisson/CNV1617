@@ -11,7 +11,29 @@ public class Instrument {
         // create class info object
         ClassInfo ci = new ClassInfo(input_class);
         int count = ci.getRoutineCount();
-        ci.addBefore("Instrument", "printHello", ci.getClassName());
+
+        for (Enumeration e = ci.getRoutines().elements(); e.hasMoreElements(); ) {
+            Routine routine = (Routine) e.nextElement();
+            routine.addBefore("Instrument", "dynMethodCount", new Integer(1));
+            if(routine.getMethodName().equals("draw") && routine.getClassName().equals("raytracer/RayTracer")) {
+                System.out.println("Found draw method in " + input_class);
+                routine.addAfter("Instrument", "printStats", "null");
+            }
+
+            // iterate instructions
+            InstructionArray instructions = routine.getInstructionArray();
+            for (Enumeration instrs = instructions.elements(); instrs.hasMoreElements(); ) {
+                Instruction instr = (Instruction) instrs.nextElement();
+                int opcode=instr.getOpcode();
+                if ((opcode==InstructionTable.NEW) ||
+                        (opcode==InstructionTable.newarray) ||
+                        (opcode==InstructionTable.anewarray) ||
+                        (opcode==InstructionTable.multianewarray)) {
+                        instr.addBefore("Instrument", "allocCount", new Integer(opcode));
+                }
+            }
+        }
+
         // unmodified class, for now
         ci.write(output_class);
         System.out.println(input_class + " has " + count + " routines.");
@@ -19,6 +41,21 @@ public class Instrument {
 
     public static synchronized void printHello(String foo) {
         System.out.println("hello: " + foo);
+    }
+    
+    private static int dyn_method_count = 0;
+    public static synchronized void dynMethodCount(int incr) {
+        dyn_method_count++;
+    }
+
+    private static int alloc_count = 0;
+    public static synchronized void allocCount(int type) {
+        alloc_count++;
+    }
+
+    public static synchronized void printStats(String s) {
+        System.out.println("dyn_method_count = " + dyn_method_count);
+        System.out.println("alloc_count = " + alloc_count);
     }
 
     static void instrument_dir(String path, String dir_name, String output_dir) {
