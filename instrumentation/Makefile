@@ -1,7 +1,7 @@
 JAVAC=javac
 JAVA=java
 
-CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.
+CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.:../server/build/classes
 
 .SUFFIXES: .java .class
 .PHONY: clean run

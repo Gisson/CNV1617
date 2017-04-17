@@ -2,7 +2,7 @@ JAVAC=javac
 JFLAGS=
 
 .SUFFIXES: .java .class
-.PHONY: clean run
+.PHONY: clean run server raytracer instrumented-rt files
 
 CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:src/:../raytracer/src
 
@@ -21,7 +21,9 @@ SERVER_CLASSES=$(SERVER_SOURCES:$(SOURCEPATH)/%.java=%.class)
 
 # FIXME: using ant because travisCI does not like the Makefile despite it working both on my machine and on AWS
 
-all: instrumented-rt
+all: server 
+
+server:
 	ant compile
 #all: $(BUILDDIR) server.jar
 
