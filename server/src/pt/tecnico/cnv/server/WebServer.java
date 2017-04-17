@@ -25,11 +25,15 @@ import raytracer.RayTracer;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
     int test1 = Test.test; // just testing dependencies in the Makefile
     public static final String RAYTRACER_PATH = System.getProperty("user.dir")+"/../raytracer";
+	private static HashMap<Long,String> requests=new HashMap<Long,String>();
 
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
@@ -46,6 +50,9 @@ public class WebServer {
         server.start();
         System.out.println("main exiting...");
     }
+	public static synchronized String getRequest(long threadId){
+		return requests.get(threadId);
+	}
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
@@ -60,6 +67,16 @@ public class WebServer {
                 int wrows = Integer.parseInt(query_pairs.get("wr"));
                 int coff = Integer.parseInt(query_pairs.get("coff"));
                 int roff = -Integer.parseInt(query_pairs.get("roff"));
+				String params="f="+inFile+"&sc="+scols+"&sr="+srows+"&wc="+wcols+"&wr="+wrows+"&coff="+coff+"&roff="+roff;
+				/*params.add("f="+inFile);
+				params.add("&sc="+scols);
+				params.add("&sr="+Integer.toString(srows));
+				params.add("&wc="+Integer.toString(wcols));
+				params.add("&wr="+Integer.toString(wrows));
+				params.add("&coff="+Integer.toString(coff));
+				params.add("&roff="+Integer.toString(roff));*/
+				requests.put(Thread.currentThread().getId(),params);
+				System.out.println("thread id = "+Thread.currentThread().getId()+"\nrequest : f="+inFile+"&sc="+scols+"&sr="+srows+"&wc="+wcols+"&wr="+wrows+"&coff="+coff+"&roff="+roff);
                 File temp = File.createTempFile("render", ".bmp");
                 RayTracer rt = new RayTracer(scols, srows, wcols, wrows, coff, roff);
                 rt.readScene(new File(RAYTRACER_PATH + "/" + inFile));
@@ -141,6 +158,8 @@ public class WebServer {
         os.write(response.getBytes());
         os.close();
     }
+	
+
 
 
 }

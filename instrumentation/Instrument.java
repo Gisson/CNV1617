@@ -1,10 +1,11 @@
 import BIT.highBIT.*;
 import java.io.*;
 import java.util.*;
-
+import pt.tecnico.cnv.server.WebServer;
 
 public class Instrument {
     private static PrintStream out = null;
+	private static String logFile="server.log";
 
     static void instrument_class(String input_class, String output_class) {
         System.out.println("Instrument class: " + input_class + " to "  + output_class);
@@ -39,6 +40,7 @@ public class Instrument {
         System.out.println(input_class + " has " + count + " routines.");
     }
 
+    
     public static synchronized void printHello(String foo) {
         System.out.println("hello: " + foo);
     }
@@ -54,9 +56,21 @@ public class Instrument {
     }
 
     public static synchronized void printStats(String s) {
-        System.out.println("dyn_method_count = " + dyn_method_count);
-        System.out.println("alloc_count = " + alloc_count);
+		Instrument.logToFile(WebServer.getRequest(Thread.currentThread().getId()));
+        Instrument.logToFile("thread_id = "+Thread.currentThread().getId());
+        Instrument.logToFile("dyn_method_count = " + dyn_method_count);
+        Instrument.logToFile("alloc_count = " + alloc_count);
     }
+
+	public static synchronized void logToFile(String logString) {
+		try{
+			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(Instrument.logFile,true)));
+			writer.println(logString);
+			writer.close();
+		} catch( IOException e){
+			e.printStackTrace();
+		}
+	}
 
     static void instrument_dir(String path, String dir_name, String output_dir) {
         final String separator = System.getProperty("file.separator");
