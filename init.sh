@@ -17,7 +17,6 @@ if ! [[ -d  "$HOME/BIT" ]];then
   cd "$HOME"
   wget $BITURL
   unzip BIT.zip
-  source "$BITDIR/java-config.sh"
   popd
 fi
 

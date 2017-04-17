@@ -21,9 +21,9 @@ SERVER_CLASSES=$(SERVER_SOURCES:$(SOURCEPATH)/%.java=%.class)
 
 # FIXME: using ant because travisCI does not like the Makefile despite it working both on my machine and on AWS
 
-all: server 
+all: server instrumented-rt
 
-server:
+server: raytracer
 	ant compile
 #all: $(BUILDDIR) server.jar
 
@@ -44,7 +44,7 @@ $(BUILDDIR):
 
 #run: server.jar
 #	java -cp "$(CLASSPATH)" -jar server.jar
-run: instrumented-rt
+run: server instrumented-rt
 	_JAVA_OPTIONS="-XX:-UseSplitVerifier" ant run
 # instrumented classes need _JAVA_OPTIONS="-XX:-UseSplitVerifier" to run
 
