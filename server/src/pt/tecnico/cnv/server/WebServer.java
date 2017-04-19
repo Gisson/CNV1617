@@ -127,6 +127,15 @@ public class WebServer {
         }
     }
 
+    private static String prettyBytes(long bytes) {
+        String response = bytes + " bytes";
+        if( bytes > 1024*1024) {
+            return (bytes/1024/1024) + " MiB (" + response + ")";
+        } else {
+            return response;
+        }
+    }
+
     static class VersionHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
@@ -138,6 +147,13 @@ public class WebServer {
                             + getEnv("JAVA_HOME") + "\n"
                             + getEnv("JAVA_ROOT") + "\n"
                             + getProperty("java.class.path") + "\n";
+            // runtime information
+            Runtime run = Runtime.getRuntime();
+            response += "\n-- JVM Runtime --\n"
+                     + "availableProcessors: " + run.availableProcessors() + "\n"
+                     + "freeMemory: " + prettyBytes(run.freeMemory()) + "\n"
+                     + "totalMemory: " + prettyBytes(run.totalMemory()) + "\n";
+
             doTextResponse(t, response, 200);
         }
     }
