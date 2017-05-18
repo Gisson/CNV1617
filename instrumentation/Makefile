@@ -1,8 +1,11 @@
 JAVAC=javac
 JAVA=java
 
-CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.:../server/build/classes
+AWS_SDK=$(HOME)/aws-java-sdk-1.11.131
 
+CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.:../server/build/classes:$(AWS_SDK)/lib/aws-java-sdk-1.11.131.jar
+
+JEXTDIRS=$(AWS_SDK)/third-party/lib/
 .SUFFIXES: .java .class
 .PHONY: clean run
 
@@ -10,11 +13,11 @@ all: instrumented-raytracer
 
 instrumented-raytracer: raytracer instrumentation
 	mkdir -p instrumented
-	$(JAVA) -cp "$(CLASSPATH)" Instrument ../raytracer/src instrumented/
+	$(JAVA) -Djava.ext.dirs=$(JEXTDIRS) -cp "$(CLASSPATH)" Instrument ../raytracer/src instrumented/
 
 # WARNING: bit needs java 1.7
 instrumentation: Instrument.java
-	$(JAVAC) $(JFLAGS) -cp "$(CLASSPATH)" $^
+	$(JAVAC) $(JFLAGS) -Djava.ext.dirs=$(JEXTDIRS) -cp "$(CLASSPATH)" $^
 	
 
 raytracer:
@@ -22,7 +25,7 @@ raytracer:
 
 
 %.class: $(BUILDDIR) %.java
-	$(JAVAC) $(JFLAGS) -d $(BUILDDIR) -cp "$(CLASSPATH)" -sourcepath "$(SOURCEPATH)" $(SOURCEPATH)/$*.java
+	$(JAVAC) -Djava.ext.dirs=$(JEXTDIRS) $(JFLAGS) -d $(BUILDDIR) -cp "$(CLASSPATH)" -sourcepath "$(SOURCEPATH)" $(SOURCEPATH)/$*.java
 
 clean:
 	$(RM) *.class
