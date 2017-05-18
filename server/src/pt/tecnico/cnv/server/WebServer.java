@@ -43,7 +43,7 @@ public class WebServer {
 
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-        server.createContext("/r.html", new MyHandler());
+        server.createContext("/r.html", new RenderHandler());
         server.createContext("/kill-yourself", new ExitHandler());
         server.createContext("/version", new VersionHandler());
         server.setExecutor(new WebServerExecutor()); // creates a default executor
@@ -53,30 +53,27 @@ public class WebServer {
 	public static synchronized String getRequest(long threadId){
 		return requests.get(threadId);
 	}
-    static class MyHandler implements HttpHandler {
+    static class RenderHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
             URI uri = t.getRequestURI();
 
             try{
                 Map<String, String> query_pairs = splitQuery(uri.getQuery());
-                String inFile = query_pairs.get("f"); 
+                String inFile = query_pairs.get("f");
                 int scols = Integer.parseInt(query_pairs.get("sc"));
                 int srows = Integer.parseInt(query_pairs.get("sr"));
                 int wcols = Integer.parseInt(query_pairs.get("wc"));
                 int wrows = Integer.parseInt(query_pairs.get("wr"));
                 int coff = Integer.parseInt(query_pairs.get("coff"));
                 int roff = -Integer.parseInt(query_pairs.get("roff"));
-				String params="f="+inFile+"&sc="+scols+"&sr="+srows+"&wc="+wcols+"&wr="+wrows+"&coff="+coff+"&roff="+roff;
-				/*params.add("f="+inFile);
-				params.add("&sc="+scols);
-				params.add("&sr="+Integer.toString(srows));
-				params.add("&wc="+Integer.toString(wcols));
-				params.add("&wr="+Integer.toString(wrows));
-				params.add("&coff="+Integer.toString(coff));
-				params.add("&roff="+Integer.toString(roff));*/
-				requests.put(Thread.currentThread().getId(),params);
-				System.out.println("thread id = "+Thread.currentThread().getId()+"\nrequest : f="+inFile+"&sc="+scols+"&sr="+srows+"&wc="+wcols+"&wr="+wrows+"&coff="+coff+"&roff="+roff);
+
+                String params="f="+inFile+"&sc="+scols+"&sr="+srows+"&wc="+wcols+"&wr="+wrows+"&coff="+coff+"&roff="+roff;
+
+                long threadId = Thread.currentThread().getId();
+                requests.put(threadId, params);
+                System.out.println("thread id = " + threadId + "; request : " + params);
+
                 File temp = File.createTempFile("render", ".bmp");
                 RayTracer rt = new RayTracer(scols, srows, wcols, wrows, coff, roff);
                 rt.readScene(new File(RAYTRACER_PATH + "/" + inFile));
@@ -174,7 +171,7 @@ public class WebServer {
         os.write(response.getBytes());
         os.close();
     }
-	
+
 
 
 
