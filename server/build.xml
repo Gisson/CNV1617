@@ -13,6 +13,8 @@
         <pathelement path="../instrumentation"/>
         <pathelement path="../lib"/>
         <pathelement path="../raytracer/src"/> <!-- break the server<-instrumentation<-inst-rt circular dependency -->
+        <pathelement path="${user.home}/aws-java-sdk-1.11.131/lib/aws-java-sdk-1.11.131.jar"/>
+        <pathelement path="${user.home}/aws-java-sdk-1.11.131/third-party/lib/*"/>
     </path>
 
     <target name="clean">
