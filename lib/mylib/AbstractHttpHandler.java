@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,6 +33,13 @@ public abstract class AbstractHttpHandler  implements HttpHandler {
         }
     }
 
+    public static String presentList(List<String> list) {
+        String result = "";
+        for(String elm : list) {
+                result += "- " + elm + "\n";
+        }
+        return result + "\n";
+    }
 
     public static String getEnv(String env) {
         String result = System.getenv(env);
