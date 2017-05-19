@@ -58,7 +58,7 @@ public class Instrument {
         alloc_count++;
     }
 
-	public static synchronized void printStats(String s) {
+	public static synchronized void printStats(String s) throws Exception {
 		Map<String, String> request = WebServer.getRequest(Thread.currentThread().getId());
 
 		Map<String, Integer> parameters = new HashMap<String, Integer>();
@@ -76,12 +76,12 @@ public class Instrument {
 		int roff = -Integer.parseInt(request.get("roff"));
 		parameters.put("roff", roff);
 
-        try {
-		    MSS mss = MSS.getInstance();
+        //try { // let the exceptions reach the WebServer Handler
+            MSS mss = MSS.getInstance();
             mss.sendToMSS(filename, parameters, dyn_method_count, alloc_count);
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         
 
 		Instrument.logToFile("thread_id = " + Thread.currentThread().getId());
