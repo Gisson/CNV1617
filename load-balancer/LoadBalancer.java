@@ -33,17 +33,19 @@ import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.Headers;
 
 import mylib.AbstractHttpHandler;
 import mylib.MultithreadedExecutor;
 import mylib.VersionHandler;
 import mylib.StringHandler;
+import java.util.Random;
 
 public class LoadBalancer {
 	private static int DEFAULT_PORT = 8000;
     private static final Logger L = Logger.getLogger("WebServer");
     private static AmazonEC2 ec2;
-    private static final int INSTANCE_REFRESH_INTERVAL_MS = 3000;
+    private static final int INSTANCE_REFRESH_INTERVAL_MS = 10000;
 
 	public static void main(String argv[]) throws IOException {
         L.setLevel(Level.INFO);
@@ -138,9 +140,24 @@ public class LoadBalancer {
     static class RenderHandler extends AbstractHttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-            URI uri = t.getRequestURI();
-            /* FIXME TODO */
-            t.close();
+            List<String> nodes = getAvailableRenderNodes();
+            if(nodes.size() > 0) {
+                URI uri = t.getRequestURI();
+                String query = uri.getQuery();
+
+                /* select random node */
+                int rand = new Random().nextInt(nodes.size());
+                String node = nodes.get(rand);
+
+                /* redirect :/ */
+                Headers headers = t.getResponseHeaders();
+                headers.add("Location", "http://"+node+":8000/r.html?"+query);
+                t.sendResponseHeaders(301, 0);
+
+                t.close();
+            } else {
+                doTextResponse(t, "No available render instances!", 503);
+            }
         }
     }
 
