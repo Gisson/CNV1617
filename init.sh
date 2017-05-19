@@ -4,7 +4,7 @@
 BITURL="http://grupos.tecnico.ulisboa.pt/~meic-cnv.daemon/labs/labs-bit/BIT.zip"
 BITDIR="$HOME/BIT"
 
-AWS_SDK="$HOME/aws-java-sdk-1.11.131"
+AWS_SDK="$HOME/aws-java-sdk-1.11.132"
 AWS_SDK_URL="http://sdk-for-java.amazonwebservices.com/latest/aws-java-sdk.zip"
 
 #This is specific for the aws machine
@@ -33,7 +33,8 @@ if ! [[ -d "$AWS_SDK" ]]; then
   (
     cd ~
     wget "$AWS_SDK_URL"
-    unzip aws-java-sdk.zip
+    unzip -q aws-java-sdk.zip
+    rm aws-java-sdk.zip*
   )
 fi
 
