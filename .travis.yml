@@ -18,3 +18,4 @@ script:
   - cd $TRAVIS_BUILD_DIR && bash init.sh # downloads BIT
   - cd $TRAVIS_BUILD_DIR && cd raytracer && make clean all
   - cd $TRAVIS_BUILD_DIR && cd server && make clean all
+  - cd $TRAVIS_BUILD_DIR && cd load-balancer && make clean all
