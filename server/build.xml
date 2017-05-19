@@ -5,6 +5,9 @@
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
 
+    <property name="aws.sdk.version" value="1.11.132"/>
+    <property name="aws.sdk"     value="${user.home}/aws-java-sdk-${aws.sdk.version}"/>
+
     <property name="main-class"  value="pt.tecnico.cnv.server.WebServer"/>
     <path id="project.class.path">
         <pathelement path="${java.class.path}/"/>
@@ -13,8 +16,8 @@
         <pathelement path="../instrumentation"/>
         <pathelement path="../lib"/>
         <pathelement path="../raytracer/src"/> <!-- break the server<-instrumentation<-inst-rt circular dependency -->
-        <pathelement path="${user.home}/aws-java-sdk-1.11.131/lib/aws-java-sdk-1.11.131.jar"/>
-        <pathelement path="${user.home}/aws-java-sdk-1.11.131/third-party/lib/*"/>
+        <pathelement path="${aws.sdk}/lib/aws-java-sdk-${aws.sdk.version}.jar"/>
+        <pathelement path="${aws.sdk}/third-party/lib/*"/>
     </path>
 
     <target name="clean">

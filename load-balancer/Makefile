@@ -1,9 +1,9 @@
 JAVAC=javac
 JAVA=java
 
-AWS_SDK=$(HOME)/aws-java-sdk-1.11.131
+AWS_SDK=$(HOME)/aws-java-sdk-1.11.132
 
-CLASSPATH = $(AWS_SDK)/lib/aws-java-sdk-1.11.131.jar:../lib/:.
+CLASSPATH = $(AWS_SDK)/lib/aws-java-sdk-1.11.132.jar:../lib/:.
 
 JEXTDIRS=$(AWS_SDK)/third-party/lib/
 .SUFFIXES: .java .class

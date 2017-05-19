@@ -3,9 +3,9 @@ JAVA=java
 
 JFLAGS=-Xlint:deprecation
 
-AWS_SDK=$(HOME)/aws-java-sdk-1.11.131
+AWS_SDK=$(HOME)/aws-java-sdk-1.11.132
 
-CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.:../server/build/classes:$(AWS_SDK)/lib/aws-java-sdk-1.11.131.jar
+CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.:../server/build/classes:$(AWS_SDK)/lib/aws-java-sdk-1.11.132.jar
 
 JEXTDIRS=$(AWS_SDK)/third-party/lib/
 .SUFFIXES: .java .class
