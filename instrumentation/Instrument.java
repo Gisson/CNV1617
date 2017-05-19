@@ -76,7 +76,13 @@ public class Instrument {
 		int roff = -Integer.parseInt(request.get("roff"));
 		parameters.put("roff", roff);
 
-		/* FIXME send *parameters* to MSS here */
+        try {
+		    MSS mss = MSS.getInstance();
+            mss.sendToMSS(filename, parameters, dyn_method_count, alloc_count);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
 
 		Instrument.logToFile("thread_id = " + Thread.currentThread().getId());
 		Instrument.logToFile("dyn_method_count = " + dyn_method_count);

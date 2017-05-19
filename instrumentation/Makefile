@@ -1,6 +1,8 @@
 JAVAC=javac
 JAVA=java
 
+JFLAGS=-Xlint:deprecation
+
 AWS_SDK=$(HOME)/aws-java-sdk-1.11.131
 
 CLASSPATH = $(HOME)/BIT/:$(HOME)/BIT/samples/:.:../server/build/classes:$(AWS_SDK)/lib/aws-java-sdk-1.11.131.jar
@@ -16,16 +18,19 @@ instrumented-raytracer: raytracer instrumentation
 	$(JAVA) -Djava.ext.dirs=$(JEXTDIRS) -cp "$(CLASSPATH)" Instrument ../raytracer/src instrumented/
 
 # WARNING: bit needs java 1.7
-instrumentation: Instrument.java
-	$(JAVAC) $(JFLAGS) -Djava.ext.dirs=$(JEXTDIRS) -cp "$(CLASSPATH)" $^
+instrumentation: Instrument.java MSS.class
+	$(JAVAC) $(JFLAGS) -Djava.ext.dirs=$(JEXTDIRS) -cp "$(CLASSPATH)" $<
 	
+MSS.class: MSS.java
+
+MSS: MSS.class
 
 raytracer:
 	(cd ../raytracer/ && $(MAKE) all)
 
 
-%.class: $(BUILDDIR) %.java
-	$(JAVAC) -Djava.ext.dirs=$(JEXTDIRS) $(JFLAGS) -d $(BUILDDIR) -cp "$(CLASSPATH)" -sourcepath "$(SOURCEPATH)" $(SOURCEPATH)/$*.java
+%.class: %.java
+	$(JAVAC) -Djava.ext.dirs=$(JEXTDIRS) $(JFLAGS) -cp "$(CLASSPATH)" $*.java
 
 clean:
 	$(RM) *.class
