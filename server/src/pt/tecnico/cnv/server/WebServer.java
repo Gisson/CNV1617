@@ -37,7 +37,7 @@ public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
     int test1 = Test.test; // just testing dependencies in the Makefile
     public static final String RAYTRACER_PATH = System.getProperty("user.dir")+"/../raytracer";
-	private static HashMap<Long,String> requests=new HashMap<Long,String>();
+	private static HashMap<Long,Map<String, String>> requests = new HashMap<Long,Map<String, String>>();
 
     public static void main(String[] args) throws Exception {
         LOGGER.setLevel(Level.INFO);
@@ -54,7 +54,7 @@ public class WebServer {
         server.start();
         System.out.println("main exiting...");
     }
-	public static synchronized String getRequest(long threadId){
+	public static synchronized Map<String, String> getRequest(long threadId){
 		return requests.get(threadId);
 	}
     static class RenderHandler extends AbstractHttpHandler {
@@ -63,7 +63,8 @@ public class WebServer {
             URI uri = t.getRequestURI();
 
             try{
-                Map<String, String> query_pairs = splitQuery(uri.getQuery());
+                String query = uri.getQuery();
+                Map<String, String> query_pairs = splitQuery(query);
                 String inFile = query_pairs.get("f");
                 int scols = Integer.parseInt(query_pairs.get("sc"));
                 int srows = Integer.parseInt(query_pairs.get("sr"));
@@ -72,11 +73,9 @@ public class WebServer {
                 int coff = Integer.parseInt(query_pairs.get("coff"));
                 int roff = -Integer.parseInt(query_pairs.get("roff"));
 
-                String params="f="+inFile+"&sc="+scols+"&sr="+srows+"&wc="+wcols+"&wr="+wrows+"&coff="+coff+"&roff="+roff;
-
                 long threadId = Thread.currentThread().getId();
-                requests.put(threadId, params);
-                System.out.println("thread id = " + threadId + "; request : " + params);
+                requests.put(threadId, query_pairs);
+                System.out.println("thread id = " + threadId + "; query : " + query);
 
                 File temp = File.createTempFile("render", ".bmp");
                 RayTracer rt = new RayTracer(scols, srows, wcols, wrows, coff, roff);

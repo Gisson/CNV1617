@@ -3,6 +3,9 @@ import java.io.*;
 import java.util.*;
 import pt.tecnico.cnv.server.WebServer;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class Instrument {
     private static PrintStream out = null;
 	private static String logFile="server.log";
@@ -55,12 +58,30 @@ public class Instrument {
         alloc_count++;
     }
 
-    public static synchronized void printStats(String s) {
-		Instrument.logToFile(WebServer.getRequest(Thread.currentThread().getId()));
-        Instrument.logToFile("thread_id = "+Thread.currentThread().getId());
-        Instrument.logToFile("dyn_method_count = " + dyn_method_count);
-        Instrument.logToFile("alloc_count = " + alloc_count);
-    }
+	public static synchronized void printStats(String s) {
+		Map<String, String> request = WebServer.getRequest(Thread.currentThread().getId());
+
+		Map<String, Integer> parameters = new HashMap<String, Integer>();
+		String filename = request.get("f");
+		int scols = Integer.parseInt(request.get("sc"));
+		parameters.put("sc", scols);
+		int srows = Integer.parseInt(request.get("sr"));
+		parameters.put("sr", srows);
+		int wcols = Integer.parseInt(request.get("wc"));
+		parameters.put("wc", wcols);
+		int wrows = Integer.parseInt(request.get("wr"));
+		parameters.put("wr", wrows);
+		int coff = Integer.parseInt(request.get("coff"));
+		parameters.put("coff", coff);
+		int roff = -Integer.parseInt(request.get("roff"));
+		parameters.put("roff", roff);
+
+		/* FIXME send *parameters* to MSS here */
+
+		Instrument.logToFile("thread_id = " + Thread.currentThread().getId());
+		Instrument.logToFile("dyn_method_count = " + dyn_method_count);
+		Instrument.logToFile("alloc_count = " + alloc_count);
+	}
 
 	public static synchronized void logToFile(String logString) {
 		try{
