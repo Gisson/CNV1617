@@ -29,6 +29,10 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import mylib.VersionHandler;
+import mylib.AbstractHttpHandler;
+import mylib.MultithreadedExecutor;
+
 public class WebServer {
     private static final Logger LOGGER = Logger.getLogger("WebServer");
     int test1 = Test.test; // just testing dependencies in the Makefile
@@ -46,14 +50,14 @@ public class WebServer {
         server.createContext("/r.html", new RenderHandler());
         server.createContext("/kill-yourself", new ExitHandler());
         server.createContext("/version", new VersionHandler());
-        server.setExecutor(new WebServerExecutor()); // creates a default executor
+        server.setExecutor(new MultithreadedExecutor());
         server.start();
         System.out.println("main exiting...");
     }
 	public static synchronized String getRequest(long threadId){
 		return requests.get(threadId);
 	}
-    static class RenderHandler implements HttpHandler {
+    static class RenderHandler extends AbstractHttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
             URI uri = t.getRequestURI();
@@ -106,74 +110,13 @@ public class WebServer {
         }
     }
 
-    public static Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
-        Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-        String[] pairs = query.split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-        }
-        return query_pairs;
-    }
-
-    static class ExitHandler implements HttpHandler {
+    static class ExitHandler extends AbstractHttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
             doTextResponse(t, "goodbyte world", 200);
             System.exit(0);
         }
     }
-
-    private static String prettyBytes(long bytes) {
-        String response = bytes + " bytes";
-        if( bytes > 1024*1024) {
-            return (bytes/1024/1024) + " MiB (" + response + ")";
-        } else {
-            return response;
-        }
-    }
-
-    static class VersionHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange t) throws IOException {
-            String response = getProperty("java.version") + "\n"
-                            + getProperty("java.vendor") + "\n"
-                            + getProperty("java.home") + "\n"
-                            + getProperty("os.name") + "\n"
-                            + getProperty("user.dir") + "\n"
-                            + getEnv("JAVA_HOME") + "\n"
-                            + getEnv("JAVA_ROOT") + "\n"
-                            + getProperty("java.class.path") + "\n";
-            // runtime information
-            Runtime run = Runtime.getRuntime();
-            response += "\n-- JVM Runtime --\n"
-                     + "availableProcessors: " + run.availableProcessors() + "\n"
-                     + "freeMemory: " + prettyBytes(run.freeMemory()) + "\n"
-                     + "totalMemory: " + prettyBytes(run.totalMemory()) + "\n";
-
-            doTextResponse(t, response, 200);
-        }
-    }
-
-    private static String getEnv(String env) {
-        String result = System.getenv(env);
-        return env + ": " + (result != null ? result : "(null)");
-    }
-
-    private static String getProperty(String p) {
-        String result = System.getProperty(p);
-        return p + ": " + (result != null ? result : "(null)");
-    }
-
-    private static void doTextResponse(HttpExchange t, String response, int code) throws IOException {
-        t.sendResponseHeaders(code, response.length());
-        OutputStream os = t.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
-    }
-
-
-
 
 }
 // vim: expandtab:ts=4:sw=4

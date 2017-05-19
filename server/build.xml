@@ -11,6 +11,7 @@
         <pathelement path="${build.dir}/classes"/>
         <pathelement path="../instrumentation/instrumented"/>
         <pathelement path="../instrumentation"/>
+        <pathelement path="../lib"/>
         <pathelement path="../raytracer/src"/> <!-- break the server<-instrumentation<-inst-rt circular dependency -->
     </path>
 

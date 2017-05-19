@@ -1,8 +1,8 @@
-package pt.tecnico.cnv.server;
+package mylib;
 
 import java.util.concurrent.Executor;
 
-public class WebServerExecutor implements Executor{
+public class MultithreadedExecutor implements Executor{
 
 	@Override
 	public void execute(Runnable r){
