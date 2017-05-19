@@ -106,17 +106,36 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 
 
 		UUID id = UUID.randomUUID();
+		float factorx = 100f/request.get("sr");
+		float factory = 100f/request.get("sc");
+
+		/*We'll rescale every image to have a sc and sr of maximum 100
+		To do so we'll use
+		f(x)=(100-0)(x-0)/(sc-0) to every xc
+		
+
+		*/
+
 
 
 		// Add another .waitUntilActive(dynamoDB, tableName);tem
-            Map<String, AttributeValue> item = newItem (id, filename, request.get("sc"),  request.get("sr"),  request.get("wc"), request.get("wr"), request.get("coff"),  request.get("roff"), dyn_count, alloc_count);
+            Map<String, AttributeValue> item = newItem (id, filename, request.get("sc"),  request.get("sr"),  request.get("wc"), request.get("wr"), request.get("coff"),  request.get("roff"),
+ factory*request.get("sc"),
+factorx*request.get("sr"),
+factory*request.get("wc"),
+factorx*request.get("wr"), 
+factory*request.get("coff"), 
+factorx*request.get("roff"), 
+dyn_count, alloc_count, 
+factorx*factory*dyn_count, 
+factorx*factory*alloc_count);
              PutItemRequest putItemRequest = new PutItemRequest("cnv-metrics", item);
              PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
             System.out.println("Result: " + putItemResult);
 
     }
 
-    private static Map<String, AttributeValue> newItem(UUID id, String filename, Integer sc, Integer sr, Integer wc, Integer wr, Integer coff, Integer roff, int dyn, int alloc) {
+    private static Map<String, AttributeValue> newItem(UUID id, String filename, Integer sc, Integer sr, Integer wc, Integer wr, Integer coff, Integer roff, Integer sc_n, Integer sr_n, Integer wc_n, Integer wr_n, Integer coff_n, Integer roff_n, int dyn, int alloc, int dyn_n, int alloc_n) {
         Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
         item.put("uuid", new AttributeValue(id.toString()));
 	item.put("filename", new AttributeValue(filename));
@@ -126,13 +145,59 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 	item.put("wr", new AttributeValue().withN(wr.toString()));
 	item.put("coff", new AttributeValue().withN(coff.toString()));
 	item.put("roff", new AttributeValue().withN(roff.toString()));
+	item.put("sc_n", new AttributeValue().withN(sc_n.toString()));
+         item.put("sr_n", new AttributeValue().withN(sr_n.toString()));
+         item.put("wc_n", new AttributeValue().withN(wc_n.toString()));
+         item.put("wr_n", new AttributeValue().withN(wr_n.toString()));
+         item.put("coff_n", new AttributeValue().withN(coff_n.toString()));
+         item.put("roff_n", new AttributeValue().withN(roff_n.toString()));
         item.put("dyn_count", new AttributeValue().withN(Integer.toString(dyn)));
 	item.put("alloc_count", new AttributeValue().withN(Integer.toString(alloc)));
+	 item.put("dyn_count_n", new AttributeValue().withN(Integer.toString(dyn_n)));
+         item.put("alloc_count_n", new AttributeValue().withN(Integer.toString(alloc_n)));
 
         return item;
     }
+	
+	public synchronized void query(String filename, Integer sc, Integer sr, Integer wc, Integer wr, Integer coff, Integer roff){
+		
+		Integer factorx = 100/sr;
+                Integer factory = 100/sc;
+             	Integer coff_n = factory*coff; 
+		Integer roff_n = factorx*roff;
+		Integer wc_n = factory*wc;
+		Integer wr_n = factorx*wr;
 
 
+		// Scan items for movies with a year attribute greater than 1985
+             HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
+             Condition condition1 = new Condition()
+                 .withComparisonOperator(ComparisonOperator.GT.toString())
+                 .withAttributeValueList(new AttributeValue().withN(String.valueOf(coff_n-0.2*wc_n)));
+
+             Condition condition2 = new Condition()
+                  .withComparisonOperator(ComparisonOperator.LT.toString())
+                  .withAttributeValueList(new AttributeValue().withN(String.valueOf(coff_n+wc_n)));
+
+             Condition condition3 = new Condition()
+                  .withComparisonOperator(ComparisonOperator.GT.toString())
+                  .withAttributeValueList(new AttributeValue().withN(String.valueOf(roff_n-0.2*wr_n)));
+
+              Condition condition4 = new Condition()
+                  .withComparisonOperator(ComparisonOperator.LT.toString())
+                  .withAttributeValueList(new AttributeValue().withN(String.valueOf(roff_n+wr_n)));
+		
+             scanFilter.put("coff_n", condition1);
+//             scanFilter.put("coff_n", condition2);
+//             scanFilter.put("roff_n", condition3);
+ //            scanFilter.put("roff_n", condition4);
+
+             ScanRequest scanRequest = new ScanRequest("cnv-metrics").withScanFilter(scanFilter    );
+             ScanResult scanResult = dynamoDB.scan(scanRequest);
+             System.out.println("Result: " + scanResult);
+
+
+	}
 }
 /*Escrever o resto aqui*/
 

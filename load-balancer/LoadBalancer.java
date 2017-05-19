@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.logging.Level;
+import java.util.Map;
 
 public class LoadBalancer {
 	private static int DEFAULT_PORT = 8000;
@@ -40,6 +41,21 @@ public class LoadBalancer {
         public void handle(HttpExchange t) throws IOException {
             URI uri = t.getRequestURI();
             /* FIXME TODO */
+                String query = uri.getQuery();
+                Map<String, String> query_pairs = splitQuery(query);
+                String inFile = query_pairs.get("f");
+                Integer scols = Integer.valueOf(query_pairs.get("sc"));
+                Integer srows = Integer.valueOf(query_pairs.get("sr"));
+                Integer wcols = Integer.valueOf(query_pairs.get("wc"));
+                Integer wrows = Integer.valueOf(query_pairs.get("wr"));
+                Integer coff = Integer.valueOf(query_pairs.get("coff"));
+                Integer roff = -Integer.valueOf(query_pairs.get("roff"));
+		try {
+			MSS mss = MSS.getInstance();
+			mss.query(inFile, scols,  srows,  wcols,  wrows,  coff,  roff);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
             t.close();
         }
     }
