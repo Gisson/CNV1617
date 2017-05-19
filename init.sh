@@ -13,9 +13,14 @@ AWS_SDK_URL="http://sdk-for-java.amazonwebservices.com/latest/aws-java-sdk.zip"
 # no need to cd to the repo... this script is already there
 #cd $BASEDIR
 
+if test "x$1" = "xload-balancer"; then
+  loadbalancer=true
+else
+  loadbalancer=false
+fi
 
 # also needed for travisCI
-if ! [[ -d  "$BITDIR" ]];then
+if (! [[ -d  "$BITDIR" ]]) && (! $loadbalancer) ;then
   pushd .
   cd "$HOME"
   wget $BITURL
@@ -23,6 +28,7 @@ if ! [[ -d  "$BITDIR" ]];then
   popd
 fi
 
+# for render-nodes and the load-balancer
 if ! [[ -d "$AWS_SDK" ]]; then
   (
     cd ~
@@ -33,6 +39,11 @@ fi
 
 if test "x$1" = "xrender-node"; then
   cd "server/"
+  make run
+fi
+
+if $loadbalancer; then
+  cd "load-balancer"
   make run
 fi
 # vim: expandtab:ts=2:sw=2
